@@ -1,0 +1,20 @@
+{
+  "short_name": "Kitchen",
+  "name": "Güldeniz Düz Kitchen",
+  "icons": [
+    {
+      "src": "https://drive.google.com/thumbnail?id=1ykHLh-0bZs9z1i58N4HEOUE30Kk1kJic&sz=w192",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://drive.google.com/thumbnail?id=1ykHLh-0bZs9z1i58N4HEOUE30Kk1kJic&sz=w512",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#e67e22",
+  "background_color": "#f8f9fa"
+}
