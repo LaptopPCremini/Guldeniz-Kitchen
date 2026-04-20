@@ -85,7 +85,27 @@
         .back-btn { background: #95a5a6; margin-top: 10px; }
         #loader { text-align: center; padding: 50px; font-weight: bold; }
         .explanation { color: #e67e22; font-size: 0.9rem; font-style: italic; }
-    </style>
+
+        <style>
+    /* ... deine bisherigen Styles ... */
+
+    /* VERHINDERT DAS GOOGLE-ÜBERSETZUNGS-POPUP BEIM KLICKEN */
+    .content, h2, h3, li, .steps, .origin-info {
+        pointer-events: none; /* Text reagiert nicht auf Klicks */
+        user-select: none;    /* Text kann nicht aus Versehen markiert werden */
+    }
+
+    /* BUTTONS MÜSSEN ABER WEITERHIN KLICKBAR SEIN */
+    .action-btn, .menu-btn, .lang-btn, .banner-container, #google_translate_element {
+        pointer-events: auto !important;
+    }
+
+    /* Versteckt den Google-Tooltip-Schatten, falls er doch auftaucht */
+    .goog-te-balloon-frame, #goog-gt-tt, .goog-te-tip {
+        display: none !important;
+        visibility: hidden !important;
+    }
+</style>
 </head>
 <body>
 
