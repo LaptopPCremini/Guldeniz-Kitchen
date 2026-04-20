@@ -13,11 +13,55 @@
             --dessert: #d81b60; 
             --cake: #6d4c41; 
         }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 0; margin: 0; }
-        .card { background: white; width: 100%; max-width: 450px; min-height: 100vh; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 1px solid #eee; position: relative; }
-        .app-banner { width: 100%; height: auto; display: block; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0; }
         
-        /* Menu Styles */
+        .card { background: white; width: 100%; max-width: 450px; min-height: 100vh; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 1px solid #eee; position: relative; overflow: hidden; }
+        
+        /* Banner als Button zum Ausfahren */
+        .banner-container { cursor: pointer; width: 100%; position: relative; z-index: 1001; background: white; }
+        .app-banner { width: 100%; height: auto; display: block; }
+
+        /* Ausfahrbare Sprach-Leiste */
+        .language-drawer {
+            background: #ffffff;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            padding: 0;
+            max-height: 0; /* Standardmäßig eingefahren */
+            overflow: hidden;
+            transition: all 0.4s ease-in-out;
+            border-bottom: 0px solid #eee;
+            z-index: 1000;
+        }
+        .language-drawer.open {
+            padding: 15px 0;
+            max-height: 80px; /* Ausgefahren */
+            border-bottom: 1px solid #eee;
+        }
+
+        .lang-btn {
+            cursor: pointer;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            transition: transform 0.2s;
+            background: #f8f9fa;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .lang-btn:active { transform: scale(0.9); }
+
+        /* Google-Widget verstecken */
+        #google_translate_element { display: none !important; }
+        .goog-te-banner-frame { display: none !important; }
+        body { top: 0 !important; }
+
+        /* Menu & Content */
         #main-menu { padding: 25px; text-align: center; }
         .menu-btn {
             display: flex; align-items: center; justify-content: center; flex-direction: column;
@@ -28,7 +72,6 @@
         .menu-btn span { font-size: 1.8rem; margin-bottom: 5px; }
         
         .edition-header { width: 100%; height: 50px; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #eee; }
-
         .content { padding: 20px; }
         .meal-pic { width: 100%; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         h2 { color: #2c3e50; text-align: center; margin: 10px 0; font-size: 1.6rem; }
@@ -47,26 +90,24 @@
 <body>
 
 <div class="card">
-    <img src="https://drive.google.com/thumbnail?id=18q_Gy1muj9SkApuQHxz991F3LCoXaE-V&sz=w1000" class="app-banner">
+    <div class="banner-container" onclick="toggleLanguages()">
+        <img src="https://drive.google.com/thumbnail?id=18q_Gy1muj9SkApuQHxz991F3LCoXaE-V&sz=w1000" class="app-banner">
+    </div>
+
+    <div id="langDrawer" class="language-drawer">
+        <div class="lang-btn" onclick="changeLanguage('tr')">🇹🇷</div>
+        <div class="lang-btn" onclick="changeLanguage('de')">🇩🇪</div>
+        <div class="lang-btn" onclick="changeLanguage('en')">🇺🇸</div>
+    </div>
+
+    <div id="google_translate_element"></div>
 
     <div id="main-menu">
         <h2 style="margin-bottom: 25px;">Hoş geldin Anne! ❤️</h2>
-        
-        <button class="menu-btn" style="background: var(--intl);" onclick="startApp('intl')">
-            <span>🌍</span> International recipes
-        </button>
-
-        <button class="menu-btn" style="background: var(--turkish);" onclick="startApp('turkish')">
-            <span>🇹🇷</span> Turkish recipes
-        </button>
-
-        <button class="menu-btn" style="background: var(--dessert);" onclick="startApp('dessert')">
-            <span>🍭</span> Dessert recipes
-        </button>
-
-        <button class="menu-btn" style="background: var(--cake);" onclick="startApp('cake')">
-            <span>🎂</span> Cake recipes
-        </button>
+        <button class="menu-btn" style="background: var(--intl);" onclick="startApp('intl')"><span>🌍</span> International recipes</button>
+        <button class="menu-btn" style="background: var(--turkish);" onclick="startApp('turkish')"><span>🇹🇷</span> Turkish recipes</button>
+        <button class="menu-btn" style="background: var(--dessert);" onclick="startApp('dessert')"><span>🍭</span> Dessert recipes</button>
+        <button class="menu-btn" style="background: var(--cake);" onclick="startApp('cake')"><span>🎂</span> Cake recipes</button>
     </div>
 
     <div id="app-view" style="display:none;">
@@ -75,9 +116,7 @@
                 <text id="header-text" x="50%" y="25" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="20" fill="white"></text>
             </svg>
         </div>
-
         <div id="loader">Yükleniyor... 👩‍🍳</div>
-
         <div id="content" class="content" style="display:none">
             <h2 id="name"></h2>
             <span id="origin" class="origin-info"></span>
@@ -86,18 +125,42 @@
             <ul id="ing"></ul>
             <h3>Preparation</h3>
             <div id="step" class="steps"></div>
-            
             <button id="next-btn" class="action-btn" onclick="getRecipe()">Yeni Tarif ✅</button>
             <button class="action-btn back-btn" onclick="showMenu()">⬅️ Ana Menü</button>
         </div>
     </div>
 </div>
 
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'tr,de,en',
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+
+    function toggleLanguages() {
+        const drawer = document.getElementById('langDrawer');
+        drawer.classList.toggle('open');
+    }
+
+    function changeLanguage(langCode) {
+        var select = document.querySelector('.goog-te-combo');
+        if (select) {
+            select.value = langCode;
+            select.dispatchEvent(new Event('change'));
+        }
+        // Nach Auswahl automatisch wieder einfahren
+        setTimeout(toggleLanguages, 500);
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 <script>
     let currentMode = '';
     const forbidden = ["pork", "lard", "gelatin", "bacon", "ham", "shrimp", "prawn", "crab", "lobster", "seafood", "shellfish", "rabbit", "frog", "snail", "wine", "alcohol", "liquor"];
     const cakeKeys = ["cake", "tart", "pie", "torte", "brownies", "gateau", "cheesecake"];
-    
     const explanations = {
         "aebleskiver": " (Danish mini pancakes / Danimarka mini krebi)",
         "poutine": " (Fries with gravy / Soslu patates kızartması)",
@@ -188,7 +251,7 @@
             document.getElementById('name').innerHTML = addExplanations(meal.strMeal);
             document.getElementById('pic').src = meal.strMealThumb;
             document.getElementById('step').innerText = convertToMetric(meal.strInstructions);
-            document.getElementById('origin').innerText = meal.strArea + " Mutfağı";
+            document.getElementById('origin').innerText = (meal.strArea || "Dünya") + " Mutfağı";
 
             let ings = "";
             for(let i=1; i<=20; i++) {
