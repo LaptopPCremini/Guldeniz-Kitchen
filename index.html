@@ -21,7 +21,6 @@
         .banner-container { cursor: pointer; width: 100%; position: relative; z-index: 1001; background: white; }
         .app-banner { width: 100%; height: auto; display: block; }
 
-        /* SPRACH-DRAWER */
         .language-drawer {
             background: #ffffff; width: 100%; display: flex; justify-content: center; gap: 25px;
             padding: 0; max-height: 0; overflow: hidden; transition: all 0.4s ease-in-out; border-bottom: 0px solid #eee; z-index: 1000;
@@ -36,10 +35,8 @@
         /* VERHINDERT GOOGLE ÜBERSETZER POPUPS & MARKIERUNG */
         .content, h2, h3, li, .steps, .origin-info, span, p {
             -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
             user-select: none !important;
-            pointer-events: none !important; /* Macht Text "unsichtbar" für Klicks */
+            pointer-events: none !important; 
             -webkit-touch-callout: none !important;
         }
 
@@ -50,8 +47,7 @@
             user-select: auto !important;
         }
 
-        /* Versteckt Google Translate Elemente die stören könnten */
-        #goog-gt-tt, .goog-te-balloon-frame, .goog-te-balloon-wrapper, .goog-tooltip, .goog-tooltip:hover {
+        #goog-gt-tt, .goog-te-balloon-frame, .goog-te-balloon-wrapper, .goog-tooltip {
             display: none !important;
             visibility: hidden !important;
         }
@@ -75,15 +71,28 @@
         
         .header-row {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid #eee; margin-top: 25px; padding-bottom: 5px;
-            pointer-events: auto !important; /* Container für PDF Button klickbar lassen */
+            border-bottom: 2px solid #eee; margin-top: 25px; padding-bottom: 10px;
+            pointer-events: auto !important;
         }
-        .header-row h3 { border-bottom: none; margin: 0; color: var(--primary); }
+        .header-row h3 { border-bottom: none; margin: 0; color: var(--primary); pointer-events: none !important; }
         
+        /* GRÖSSERER PDF BUTTON */
         .save-pdf-btn {
-            background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 10px;
-            font-size: 0.9rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.1s, background 0.2s;
         }
+        .save-pdf-btn:active { transform: scale(0.95); background: #219150; }
 
         ul { padding: 0; list-style: none; }
         li { padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
