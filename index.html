@@ -32,20 +32,13 @@
             font-size: 1.6rem; transition: transform 0.2s; background: #f8f9fa; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* Verhindert Markierung und automatische Google-Suche auf Text */
         .content, h2, h3, li, .steps, .origin-info, span, p {
             -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
-            -webkit-touch-callout: none;
         }
 
-        /* Buttons und Banner müssen klickbar bleiben */
         .action-btn, .menu-btn, .lang-btn, .banner-container, .save-pdf-btn, .back-btn {
             pointer-events: auto !important;
-            -webkit-user-select: auto !important;
-            user-select: auto !important;
         }
 
         #google_translate_element { display: none !important; }
@@ -83,6 +76,12 @@
         .action-btn { color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; margin-top: 20px; cursor: pointer; }
         .back-btn { background: #95a5a6; margin-top: 10px; }
         #loader { text-align: center; padding: 50px; font-weight: bold; }
+
+        /* PDF SPEZIFISCHE REGELN */
+        .meal-pic, h2, h3, li { page-break-inside: avoid; break-inside: avoid; }
+        .steps { page-break-inside: auto; }
+        
+        #printable-area { background: white; padding: 5px; }
     </style>
 </head>
 <body>
@@ -151,22 +150,31 @@
         setTimeout(toggleLanguages, 500);
     }
 
-    // PDF Funktion
-    function downloadPDF() {
+    async function downloadPDF() {
         const element = document.getElementById('printable-area');
-        const recipeName = document.getElementById('name').innerText;
+        const recipeName = document.getElementById('name').innerText || 'Recipe';
         
-        // PDF-Optionen
+        // Verhindert grafische Glitches durch Google Translate
         const opt = {
-            margin: 10,
+            margin: [10, 10, 10, 10],
             filename: recipeName + '.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            html2canvas: { 
+                scale: 2, 
+                useCORS: true, 
+                letterRendering: true,
+                logging: false,
+                scrollY: 0
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
         };
         
-        // PDF generieren und herunterladen
-        html2pdf().set(opt).from(element).save();
+        try {
+            await html2pdf().set(opt).from(element).save();
+        } catch (err) {
+            console.error("PDF Error:", err);
+        }
     }
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
@@ -246,6 +254,7 @@
             document.getElementById('loader').style.display = 'none';
             document.getElementById('content').style.display = 'block';
         } catch (e) {
+            console.error("Fetch Error:", e);
             setTimeout(getRecipe, 2000);
         }
     }
