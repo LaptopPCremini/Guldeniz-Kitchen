@@ -21,6 +21,7 @@
         .banner-container { cursor: pointer; width: 100%; position: relative; z-index: 1001; background: white; }
         .app-banner { width: 100%; height: auto; display: block; }
 
+        /* SPRACH-DRAWER */
         .language-drawer {
             background: #ffffff; width: 100%; display: flex; justify-content: center; gap: 25px;
             padding: 0; max-height: 0; overflow: hidden; transition: all 0.4s ease-in-out; border-bottom: 0px solid #eee; z-index: 1000;
@@ -32,13 +33,27 @@
             font-size: 1.6rem; transition: transform 0.2s; background: #f8f9fa; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
+        /* VERHINDERT GOOGLE ÜBERSETZER POPUPS & MARKIERUNG */
         .content, h2, h3, li, .steps, .origin-info, span, p {
-            -webkit-user-select: none;
-            user-select: none;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            pointer-events: none !important; /* Macht Text "unsichtbar" für Klicks */
+            -webkit-touch-callout: none !important;
         }
 
+        /* Erlaubt Interaktion NUR für Buttons und Banner */
         .action-btn, .menu-btn, .lang-btn, .banner-container, .save-pdf-btn, .back-btn {
             pointer-events: auto !important;
+            -webkit-user-select: auto !important;
+            user-select: auto !important;
+        }
+
+        /* Versteckt Google Translate Elemente die stören könnten */
+        #goog-gt-tt, .goog-te-balloon-frame, .goog-te-balloon-wrapper, .goog-tooltip, .goog-tooltip:hover {
+            display: none !important;
+            visibility: hidden !important;
         }
 
         #google_translate_element { display: none !important; }
@@ -55,12 +70,13 @@
         
         .edition-header { width: 100%; height: 50px; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #eee; }
         .content { padding: 20px; }
-        .meal-pic { width: 100%; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .meal-pic { width: 100%; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); pointer-events: none; }
         h2 { color: #2c3e50; text-align: center; margin: 10px 0; }
         
         .header-row {
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 2px solid #eee; margin-top: 25px; padding-bottom: 5px;
+            pointer-events: auto !important; /* Container für PDF Button klickbar lassen */
         }
         .header-row h3 { border-bottom: none; margin: 0; color: var(--primary); }
         
@@ -77,11 +93,11 @@
         .back-btn { background: #95a5a6; margin-top: 10px; }
         #loader { text-align: center; padding: 50px; font-weight: bold; }
 
-        /* PDF SPEZIFISCHE REGELN */
-        .meal-pic, h2, h3, li { page-break-inside: avoid; break-inside: avoid; }
-        .steps { page-break-inside: auto; }
-        
-        #printable-area { background: white; padding: 5px; }
+        @media print {
+            body { background: white; }
+            .card { box-shadow: none; border: none; width: 100%; max-width: none; }
+            .save-pdf-btn, .action-btn, .back-btn, .banner-container, .language-drawer { display: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -152,29 +168,18 @@
 
     async function downloadPDF() {
         const element = document.getElementById('printable-area');
-        const recipeName = document.getElementById('name').innerText || 'Recipe';
+        const recipeName = document.getElementById('name').innerText || 'Rezept';
         
-        // Verhindert grafische Glitches durch Google Translate
         const opt = {
             margin: [10, 10, 10, 10],
             filename: recipeName + '.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2, 
-                useCORS: true, 
-                letterRendering: true,
-                logging: false,
-                scrollY: 0
-            },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
             pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
         };
         
-        try {
-            await html2pdf().set(opt).from(element).save();
-        } catch (err) {
-            console.error("PDF Error:", err);
-        }
+        html2pdf().set(opt).from(element).save();
     }
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
@@ -254,7 +259,6 @@
             document.getElementById('loader').style.display = 'none';
             document.getElementById('content').style.display = 'block';
         } catch (e) {
-            console.error("Fetch Error:", e);
             setTimeout(getRecipe, 2000);
         }
     }
