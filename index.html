@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Güldeniz Düz Kitchen - All Recipes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { 
             --primary: #e67e22; 
@@ -17,51 +18,40 @@
         
         .card { background: white; width: 100%; max-width: 450px; min-height: 100vh; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 1px solid #eee; position: relative; overflow: hidden; }
         
-        /* Banner als Button zum Ausfahren */
         .banner-container { cursor: pointer; width: 100%; position: relative; z-index: 1001; background: white; }
         .app-banner { width: 100%; height: auto; display: block; }
 
-        /* Ausfahrbare Sprach-Leiste */
         .language-drawer {
-            background: #ffffff;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            padding: 0;
-            max-height: 0; /* Standardmäßig eingefahren */
-            overflow: hidden;
-            transition: all 0.4s ease-in-out;
-            border-bottom: 0px solid #eee;
-            z-index: 1000;
+            background: #ffffff; width: 100%; display: flex; justify-content: center; gap: 25px;
+            padding: 0; max-height: 0; overflow: hidden; transition: all 0.4s ease-in-out; border-bottom: 0px solid #eee; z-index: 1000;
         }
-        .language-drawer.open {
-            padding: 15px 0;
-            max-height: 80px; /* Ausgefahren */
-            border-bottom: 1px solid #eee;
-        }
+        .language-drawer.open { padding: 15px 0; max-height: 80px; border-bottom: 1px solid #eee; }
 
         .lang-btn {
-            cursor: pointer;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            transition: transform 0.2s;
-            background: #f8f9fa;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; transition: transform 0.2s; background: #f8f9fa; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .lang-btn:active { transform: scale(0.9); }
 
-        /* Google-Widget verstecken */
+        /* Verhindert Markierung und automatische Google-Suche auf Text */
+        .content, h2, h3, li, .steps, .origin-info, span, p {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* Buttons und Banner müssen klickbar bleiben */
+        .action-btn, .menu-btn, .lang-btn, .banner-container, .save-pdf-btn, .back-btn {
+            pointer-events: auto !important;
+            -webkit-user-select: auto !important;
+            user-select: auto !important;
+        }
+
         #google_translate_element { display: none !important; }
         .goog-te-banner-frame { display: none !important; }
         body { top: 0 !important; }
 
-        /* Menu & Content */
         #main-menu { padding: 25px; text-align: center; }
         .menu-btn {
             display: flex; align-items: center; justify-content: center; flex-direction: column;
@@ -69,43 +59,31 @@
             text-decoration: none; font-size: 1.2rem; font-weight: bold; border: none; width: 100%; cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .menu-btn span { font-size: 1.8rem; margin-bottom: 5px; }
         
         .edition-header { width: 100%; height: 50px; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #eee; }
         .content { padding: 20px; }
         .meal-pic { width: 100%; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; text-align: center; margin: 10px 0; font-size: 1.6rem; }
-        .origin-info { text-align: center; font-weight: bold; display: block; margin-bottom: 15px; }
-        h3 { border-bottom: 2px solid #eee; color: var(--primary); padding-bottom: 5px; margin-top: 25px; }
-        ul { padding: 0; list-style: none; }
-        li { padding: 10px 0; border-bottom: 1px solid #f9f9f9; font-size: 1.05rem; }
-        .steps { line-height: 1.7; font-size: 1.05rem; background: #fffcf9; padding: 15px; border-radius: 15px; border: 1px solid #ffeada; white-space: pre-line; }
+        h2 { color: #2c3e50; text-align: center; margin: 10px 0; }
         
-        .action-btn { color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-size: 1.1rem; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        .header-row {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #eee; margin-top: 25px; padding-bottom: 5px;
+        }
+        .header-row h3 { border-bottom: none; margin: 0; color: var(--primary); }
+        
+        .save-pdf-btn {
+            background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 10px;
+            font-size: 0.9rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;
+        }
+
+        ul { padding: 0; list-style: none; }
+        li { padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
+        .steps { line-height: 1.7; background: #fffcf9; padding: 15px; border-radius: 15px; border: 1px solid #ffeada; white-space: pre-line; }
+        
+        .action-btn { color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; margin-top: 20px; cursor: pointer; }
         .back-btn { background: #95a5a6; margin-top: 10px; }
         #loader { text-align: center; padding: 50px; font-weight: bold; }
-        .explanation { color: #e67e22; font-size: 0.9rem; font-style: italic; }
-
-        <style>
-    /* ... deine bisherigen Styles ... */
-
-    /* VERHINDERT DAS GOOGLE-ÜBERSETZUNGS-POPUP BEIM KLICKEN */
-    .content, h2, h3, li, .steps, .origin-info {
-        pointer-events: none; /* Text reagiert nicht auf Klicks */
-        user-select: none;    /* Text kann nicht aus Versehen markiert werden */
-    }
-
-    /* BUTTONS MÜSSEN ABER WEITERHIN KLICKBAR SEIN */
-    .action-btn, .menu-btn, .lang-btn, .banner-container, #google_translate_element {
-        pointer-events: auto !important;
-    }
-
-    /* Versteckt den Google-Tooltip-Schatten, falls er doch auftaucht */
-    .goog-te-balloon-frame, #goog-gt-tt, .goog-te-tip {
-        display: none !important;
-        visibility: hidden !important;
-    }
-</style>
+    </style>
 </head>
 <body>
 
@@ -137,14 +115,23 @@
             </svg>
         </div>
         <div id="loader">Yükleniyor... 👩‍🍳</div>
+        
         <div id="content" class="content" style="display:none">
-            <h2 id="name"></h2>
-            <span id="origin" class="origin-info"></span>
-            <img id="pic" class="meal-pic" src="">
-            <h3>Ingredients (Metric)</h3>
-            <ul id="ing"></ul>
-            <h3>Preparation</h3>
-            <div id="step" class="steps"></div>
+            <div id="printable-area">
+                <h2 id="name"></h2>
+                <span id="origin" class="origin-info"></span>
+                <img id="pic" class="meal-pic" src="" crossorigin="anonymous">
+                
+                <div class="header-row">
+                    <h3>Ingredients</h3>
+                    <button class="save-pdf-btn" onclick="downloadPDF()">💾 PDF</button>
+                </div>
+                <ul id="ing"></ul>
+                
+                <h3>Preparation</h3>
+                <div id="step" class="steps"></div>
+            </div>
+            
             <button id="next-btn" class="action-btn" onclick="getRecipe()">Yeni Tarif ✅</button>
             <button class="action-btn back-btn" onclick="showMenu()">⬅️ Ana Menü</button>
         </div>
@@ -153,26 +140,33 @@
 
 <script type="text/javascript">
     function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'en',
-            includedLanguages: 'tr,de,en',
-            autoDisplay: false
-        }, 'google_translate_element');
+        new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'tr,de,en', autoDisplay: false}, 'google_translate_element');
     }
 
-    function toggleLanguages() {
-        const drawer = document.getElementById('langDrawer');
-        drawer.classList.toggle('open');
-    }
+    function toggleLanguages() { document.getElementById('langDrawer').classList.toggle('open'); }
 
     function changeLanguage(langCode) {
         var select = document.querySelector('.goog-te-combo');
-        if (select) {
-            select.value = langCode;
-            select.dispatchEvent(new Event('change'));
-        }
-        // Nach Auswahl automatisch wieder einfahren
+        if (select) { select.value = langCode; select.dispatchEvent(new Event('change')); }
         setTimeout(toggleLanguages, 500);
+    }
+
+    // PDF Funktion
+    function downloadPDF() {
+        const element = document.getElementById('printable-area');
+        const recipeName = document.getElementById('name').innerText;
+        
+        // PDF-Optionen
+        const opt = {
+            margin: 10,
+            filename: recipeName + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        // PDF generieren und herunterladen
+        html2pdf().set(opt).from(element).save();
     }
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
@@ -181,23 +175,6 @@
     let currentMode = '';
     const forbidden = ["pork", "lard", "gelatin", "bacon", "ham", "shrimp", "prawn", "crab", "lobster", "seafood", "shellfish", "rabbit", "frog", "snail", "wine", "alcohol", "liquor"];
     const cakeKeys = ["cake", "tart", "pie", "torte", "brownies", "gateau", "cheesecake"];
-    const explanations = {
-        "aebleskiver": " (Danish mini pancakes / Danimarka mini krebi)",
-        "poutine": " (Fries with gravy / Soslu patates kızartması)",
-        "mochi": " (Japanese rice cake / Japon pirinç keki)",
-        "bakewell tart": " (British almond tart / İngiliz bademli tartı)",
-        "eton mess": " (Cream and berry dessert / Kremalı meyveli tatlı)",
-        "galette": " (French flat cake / Fransız yassı keki)",
-        "ganache": " (Chocolate-cream glaze / Çikolata kreması)"
-    };
-
-    function addExplanations(text) {
-        let lowerText = text.toLowerCase();
-        for (let key in explanations) {
-            if (lowerText.includes(key)) return text + `<span class="explanation">${explanations[key]}</span>`;
-        }
-        return text;
-    }
 
     function convertToMetric(text) {
         if(!text) return "";
@@ -223,23 +200,10 @@
         const box = document.getElementById('edition-header-box');
         const nextBtn = document.getElementById('next-btn');
 
-        if(mode === 'intl') {
-            header.textContent = "🌍 International recipes 🌍";
-            box.style.backgroundColor = "#2980b9";
-            nextBtn.style.backgroundColor = "#2980b9";
-        } else if(mode === 'turkish') {
-            header.textContent = "🇹🇷 Turkish recipes 🇹🇷";
-            box.style.backgroundColor = "#c0392b";
-            nextBtn.style.backgroundColor = "#c0392b";
-        } else if(mode === 'dessert') {
-            header.textContent = "🍭 Dessert recipes 🍭";
-            box.style.backgroundColor = "#d81b60";
-            nextBtn.style.backgroundColor = "#d81b60";
-        } else {
-            header.textContent = "🎂 Cake recipes 🎂";
-            box.style.backgroundColor = "#6d4c41";
-            nextBtn.style.backgroundColor = "#6d4c41";
-        }
+        if(mode === 'intl') { header.textContent = "🌍 International recipes"; box.style.backgroundColor = "#2980b9"; nextBtn.style.backgroundColor = "#2980b9"; }
+        else if(mode === 'turkish') { header.textContent = "🇹🇷 Turkish recipes"; box.style.backgroundColor = "#c0392b"; nextBtn.style.backgroundColor = "#c0392b"; }
+        else if(mode === 'dessert') { header.textContent = "🍭 Dessert recipes"; box.style.backgroundColor = "#d81b60"; nextBtn.style.backgroundColor = "#d81b60"; }
+        else { header.textContent = "🎂 Cake recipes"; box.style.backgroundColor = "#6d4c41"; nextBtn.style.backgroundColor = "#6d4c41"; }
         getRecipe();
     }
 
@@ -265,10 +229,9 @@
             const detData = await detRes.json();
             const meal = detData.meals[0];
 
-            const checkStr = (meal.strMeal + meal.strInstructions + meal.strCategory).toLowerCase();
-            if (forbidden.some(w => checkStr.includes(w))) return getRecipe();
+            if (forbidden.some(w => (meal.strMeal + meal.strInstructions).toLowerCase().includes(w))) return getRecipe();
 
-            document.getElementById('name').innerHTML = addExplanations(meal.strMeal);
+            document.getElementById('name').innerText = meal.strMeal;
             document.getElementById('pic').src = meal.strMealThumb;
             document.getElementById('step').innerText = convertToMetric(meal.strInstructions);
             document.getElementById('origin').innerText = (meal.strArea || "Dünya") + " Mutfağı";
@@ -276,14 +239,13 @@
             let ings = "";
             for(let i=1; i<=20; i++) {
                 if(meal["strIngredient"+i]) {
-                    ings += `<li>${convertToMetric(meal["strMeasure"+i])} ${addExplanations(meal["strIngredient"+i])}</li>`;
+                    ings += `<li>${convertToMetric(meal["strMeasure"+i])} ${meal["strIngredient"+i]}</li>`;
                 }
             }
             document.getElementById('ing').innerHTML = ings;
             document.getElementById('loader').style.display = 'none';
             document.getElementById('content').style.display = 'block';
         } catch (e) {
-            document.getElementById('loader').innerText = "Hata! Tekrar deneniyor...";
             setTimeout(getRecipe, 2000);
         }
     }
