@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Güldeniz Düz Kitchen</title>
+    <title>Güldeniz Düz Kitchen - All Recipes</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { 
@@ -21,21 +21,29 @@
         .banner-container { cursor: pointer; width: 100%; position: relative; z-index: 1001; background: white; }
         .app-banner { width: 100%; height: auto; display: block; }
 
-        /* TEXT SCHUTZ: Verhindert Markieren und Klicks auf Text (gegen Popups) */
-        .content, h2, h3, li, .steps, .origin-info {
-            pointer-events: none; 
-            user-select: none;
+        .language-drawer {
+            background: #ffffff; width: 100%; display: flex; justify-content: center; gap: 25px;
+            padding: 0; max-height: 0; overflow: hidden; transition: all 0.4s ease-in-out; border-bottom: 0px solid #eee; z-index: 1000;
+        }
+        .language-drawer.open { padding: 15px 0; max-height: 80px; border-bottom: 1px solid #eee; }
+
+        .lang-btn {
+            cursor: pointer; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; transition: transform 0.2s; background: #f8f9fa; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Verhindert Google Popups auf Texten */
+        .content, h2, h3, li, .steps, .origin-info, span, p {
             -webkit-user-select: none;
+            user-select: none;
+            pointer-events: none;
         }
 
-        /* BUTTON SCHUTZ: Müssen klickbar sein und dürfen NICHT übersetzt werden */
-        .action-btn, .menu-btn, .lang-btn, .banner-container, .save-pdf-btn, .back-btn {
+        /* Erlaubt Klicks nur auf Buttons */
+        .action-btn, .menu-btn, .lang-btn, .banner-container, .save-pdf-btn, .back-btn, .header-row {
             pointer-events: auto !important;
-            user-select: auto !important;
         }
 
-        /* Google Translate Elemente verstecken */
-        .goog-te-balloon-frame, #goog-gt-tt, .goog-te-tip, .goog-te-gadget-icon { display: none !important; visibility: hidden !important; }
         #google_translate_element { display: none !important; }
         .goog-te-banner-frame { display: none !important; }
         body { top: 0 !important; }
@@ -45,29 +53,35 @@
             display: flex; align-items: center; justify-content: center; flex-direction: column;
             margin-bottom: 15px; padding: 20px; border-radius: 20px; color: white;
             text-decoration: none; font-size: 1.2rem; font-weight: bold; border: none; width: 100%; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         
         .edition-header { width: 100%; height: 50px; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #eee; }
         .content { padding: 20px; }
-        .meal-pic { width: 100%; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); pointer-events: none; }
-        h2 { color: #2c3e50; text-align: center; margin: 10px 0; font-size: 1.6rem; }
+        .meal-pic { width: 100%; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; text-align: center; margin: 10px 0; }
         
-        .header-with-btn { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; margin-top: 25px; padding-bottom: 5px; pointer-events: auto !important; }
-        .header-with-btn h3 { border-bottom: none; margin: 0; color: var(--primary); }
+        .header-row {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #eee; margin-top: 25px; padding-bottom: 5px;
+        }
+        .header-row h3 { border-bottom: none; margin: 0; color: var(--primary); }
         
-        .save-pdf-btn { background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
+        .save-pdf-btn {
+            background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 10px;
+            font-size: 0.9rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;
+        }
 
         ul { padding: 0; list-style: none; }
-        li { padding: 10px 0; border-bottom: 1px solid #f9f9f9; font-size: 1.05rem; }
-        .steps { line-height: 1.7; font-size: 1.05rem; background: #fffcf9; padding: 15px; border-radius: 15px; border: 1px solid #ffeada; white-space: pre-line; }
+        li { padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
+        .steps { line-height: 1.7; background: #fffcf9; padding: 15px; border-radius: 15px; border: 1px solid #ffeada; white-space: pre-line; }
         
-        .action-btn { color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-size: 1.1rem; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        .action-btn { color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; margin-top: 20px; cursor: pointer; }
         .back-btn { background: #95a5a6; margin-top: 10px; }
         #loader { text-align: center; padding: 50px; font-weight: bold; }
 
-        .language-drawer { background: #ffffff; width: 100%; display: flex; justify-content: center; gap: 25px; padding: 0; max-height: 0; overflow: hidden; transition: all 0.4s ease-in-out; }
-        .language-drawer.open { padding: 15px 0; max-height: 80px; border-bottom: 1px solid #eee; }
-        .lang-btn { cursor: pointer; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; background: #f8f9fa; }
+        /* PDF Layout */
+        #printable-area { background: white; padding: 5px; }
     </style>
 </head>
 <body>
@@ -86,7 +100,7 @@
     <div id="google_translate_element"></div>
 
     <div id="main-menu" class="notranslate" translate="no">
-        <h2 style="margin-bottom: 25px;" class="notranslate">Hoş geldin Anne! ❤️</h2>
+        <h2 style="margin-bottom: 25px;">Hoş geldin Anne! ❤️</h2>
         <button class="menu-btn" style="background: var(--intl);" onclick="startApp('intl')"><span>🌍</span> International recipes</button>
         <button class="menu-btn" style="background: var(--turkish);" onclick="startApp('turkish')"><span>🇹🇷</span> Turkish recipes</button>
         <button class="menu-btn" style="background: var(--dessert);" onclick="startApp('dessert')"><span>🍭</span> Dessert recipes</button>
@@ -95,20 +109,21 @@
 
     <div id="app-view" style="display:none;">
         <div id="edition-header-box" class="edition-header notranslate" translate="no">
-            <span id="header-text" style="color:white; font-weight:bold; font-size:1.2rem;"></span>
+            <svg id="svg-header" width="350" height="40" viewBox="0 0 350 40" xmlns="http://www.w3.org/2000/svg">
+                <text id="header-text" x="50%" y="25" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="20" fill="white"></text>
+            </svg>
         </div>
-        
         <div id="loader">Yükleniyor... 👩‍🍳</div>
         
         <div id="content" class="content" style="display:none">
-            <div id="recipe-to-print">
+            <div id="printable-area">
                 <h2 id="name"></h2>
                 <span id="origin" class="origin-info"></span>
                 <img id="pic" class="meal-pic" src="" crossorigin="anonymous">
                 
-                <div class="header-with-btn">
+                <div class="header-row">
                     <h3>Ingredients</h3>
-                    <button class="save-pdf-btn notranslate" translate="no" onclick="saveAsPDF()">💾 PDF</button>
+                    <button class="save-pdf-btn notranslate" translate="no" onclick="downloadPDF()">💾 PDF</button>
                 </div>
                 <ul id="ing"></ul>
                 
@@ -135,25 +150,31 @@
         setTimeout(toggleLanguages, 500);
     }
 
-    async function saveAsPDF() {
-        const element = document.getElementById('recipe-to-print');
-        const recipeName = document.getElementById('name').innerText || 'recipe';
-        
-        // Sperre kurz lösen
-        const originalPointer = element.style.pointerEvents;
-        element.style.pointerEvents = "auto";
+    // DIE FUNKTIONIERENDE PDF LOGIK
+    async function downloadPDF() {
+        const element = document.getElementById('printable-area');
+        const recipeName = document.getElementById('name').innerText || 'Recipe';
         
         const opt = {
-            margin: 10,
+            margin: [10, 10, 10, 10],
             filename: recipeName + '.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            html2canvas: { 
+                scale: 2, 
+                useCORS: true, 
+                letterRendering: true,
+                logging: false,
+                scrollY: 0
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
         };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            element.style.pointerEvents = originalPointer;
-        });
+        
+        try {
+            await html2pdf().set(opt).from(element).save();
+        } catch (err) {
+            console.error("PDF Error:", err);
+        }
     }
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
@@ -176,6 +197,7 @@
     function showMenu() {
         document.getElementById('main-menu').style.display = 'block';
         document.getElementById('app-view').style.display = 'none';
+        window.scrollTo(0,0);
     }
 
     function startApp(mode) {
@@ -184,11 +206,12 @@
         document.getElementById('app-view').style.display = 'block';
         const header = document.getElementById('header-text');
         const box = document.getElementById('edition-header-box');
+        const nextBtn = document.getElementById('next-btn');
 
-        if(mode === 'intl') { header.textContent = "🌍 International recipes"; box.style.backgroundColor = "#2980b9"; }
-        else if(mode === 'turkish') { header.textContent = "🇹🇷 Turkish recipes"; box.style.backgroundColor = "#c0392b"; }
-        else if(mode === 'dessert') { header.textContent = "🍭 Dessert recipes"; box.style.backgroundColor = "#d81b60"; }
-        else { header.textContent = "🎂 Cake recipes"; box.style.backgroundColor = "#6d4c41"; }
+        if(mode === 'intl') { header.textContent = "🌍 International recipes"; box.style.backgroundColor = "#2980b9"; nextBtn.style.backgroundColor = "#2980b9"; }
+        else if(mode === 'turkish') { header.textContent = "🇹🇷 Turkish recipes"; box.style.backgroundColor = "#c0392b"; nextBtn.style.backgroundColor = "#c0392b"; }
+        else if(mode === 'dessert') { header.textContent = "🍭 Dessert recipes"; box.style.backgroundColor = "#d81b60"; nextBtn.style.backgroundColor = "#d81b60"; }
+        else { header.textContent = "🎂 Cake recipes"; box.style.backgroundColor = "#6d4c41"; nextBtn.style.backgroundColor = "#6d4c41"; }
         getRecipe();
     }
 
