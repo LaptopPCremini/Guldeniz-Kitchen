@@ -21,33 +21,23 @@
         .banner-container { cursor: pointer; width: 100%; position: relative; z-index: 1001; background: white; }
         .app-banner { width: 100%; height: auto; display: block; }
 
-        .language-drawer {
-            background: #ffffff; width: 100%; display: flex; justify-content: center; gap: 25px;
-            padding: 0; max-height: 0; overflow: hidden; transition: all 0.4s ease-in-out; border-bottom: 0px solid #eee; z-index: 1000;
-        }
-        .language-drawer.open { padding: 15px 0; max-height: 80px; border-bottom: 1px solid #eee; }
-
-        .lang-btn {
-            cursor: pointer; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem; transition: transform 0.2s; background: #f8f9fa; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        /* ANTI-POPUP & ANTI-SELECTION CSS */
+        .content, h2, h3, li, .steps, .origin-info {
+            pointer-events: none; /* Verhindert Klicks/Tipps auf den Text */
+            user-select: none;    /* Verhindert Markieren */
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
 
-        /* VERHINDERT GOOGLE ÜBERSETZER POPUPS & MARKIERUNG */
-        .content, h2, h3, li, .steps, .origin-info, span, p {
-            -webkit-user-select: none !important;
-            user-select: none !important;
-            pointer-events: none !important; 
-            -webkit-touch-callout: none !important;
-        }
-
-        /* Erlaubt Interaktion NUR für Buttons und Banner */
-        .action-btn, .menu-btn, .lang-btn, .banner-container, .save-pdf-btn, .back-btn {
+        /* Nur Buttons dürfen geklickt werden */
+        .action-btn, .menu-btn, .lang-btn, .banner-container, #google_translate_element, .save-pdf-btn, .back-btn {
             pointer-events: auto !important;
-            -webkit-user-select: auto !important;
             user-select: auto !important;
+            -webkit-user-select: auto !important;
         }
 
-        #goog-gt-tt, .goog-te-balloon-frame, .goog-te-balloon-wrapper, .goog-tooltip {
+        /* Versteckt Google Translate Popups im Hintergrund */
+        .goog-te-balloon-frame, #goog-gt-tt, .goog-te-tip, .goog-te-gadget-icon {
             display: none !important;
             visibility: hidden !important;
         }
@@ -56,57 +46,47 @@
         .goog-te-banner-frame { display: none !important; }
         body { top: 0 !important; }
 
+        /* Menu Styles */
         #main-menu { padding: 25px; text-align: center; }
         .menu-btn {
             display: flex; align-items: center; justify-content: center; flex-direction: column;
             margin-bottom: 15px; padding: 20px; border-radius: 20px; color: white;
             text-decoration: none; font-size: 1.2rem; font-weight: bold; border: none; width: 100%; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         
         .edition-header { width: 100%; height: 50px; display: flex; justify-content: center; align-items: center; border-bottom: 3px solid #eee; }
         .content { padding: 20px; }
-        .meal-pic { width: 100%; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); pointer-events: none; }
-        h2 { color: #2c3e50; text-align: center; margin: 10px 0; }
+        .meal-pic { width: 100%; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; text-align: center; margin: 10px 0; font-size: 1.6rem; }
         
-        .header-row {
+        /* Header Bereich mit PDF Button */
+        .header-with-btn {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid #eee; margin-top: 25px; padding-bottom: 10px;
-            pointer-events: auto !important;
+            border-bottom: 2px solid #eee; margin-top: 25px; padding-bottom: 5px;
+            pointer-events: auto !important; /* Wichtig, damit Button im Header klickbar bleibt */
         }
-        .header-row h3 { border-bottom: none; margin: 0; color: var(--primary); pointer-events: none !important; }
+        .header-with-btn h3 { border-bottom: none; margin: 0; color: var(--primary); }
         
-        /* GRÖSSERER PDF BUTTON */
         .save-pdf-btn {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            transition: transform 0.1s, background 0.2s;
+            background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 8px;
+            font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;
         }
-        .save-pdf-btn:active { transform: scale(0.95); background: #219150; }
 
         ul { padding: 0; list-style: none; }
-        li { padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
-        .steps { line-height: 1.7; background: #fffcf9; padding: 15px; border-radius: 15px; border: 1px solid #ffeada; white-space: pre-line; }
+        li { padding: 10px 0; border-bottom: 1px solid #f9f9f9; font-size: 1.05rem; }
+        .steps { line-height: 1.7; font-size: 1.05rem; background: #fffcf9; padding: 15px; border-radius: 15px; border: 1px solid #ffeada; white-space: pre-line; }
         
-        .action-btn { color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        .action-btn { color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-size: 1.1rem; font-weight: bold; margin-top: 20px; cursor: pointer; }
         .back-btn { background: #95a5a6; margin-top: 10px; }
         #loader { text-align: center; padding: 50px; font-weight: bold; }
 
-        @media print {
-            body { background: white; }
-            .card { box-shadow: none; border: none; width: 100%; max-width: none; }
-            .save-pdf-btn, .action-btn, .back-btn, .banner-container, .language-drawer { display: none !important; }
+        /* Sprachmenü */
+        .language-drawer {
+            background: #ffffff; width: 100%; display: flex; justify-content: center; gap: 25px;
+            padding: 0; max-height: 0; overflow: hidden; transition: all 0.4s ease-in-out; z-index: 1000;
         }
+        .language-drawer.open { padding: 15px 0; max-height: 80px; border-bottom: 1px solid #eee; }
+        .lang-btn { cursor: pointer; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; background: #f8f9fa; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -139,16 +119,15 @@
             </svg>
         </div>
         <div id="loader">Yükleniyor... 👩‍🍳</div>
-        
         <div id="content" class="content" style="display:none">
-            <div id="printable-area">
+            <div id="recipe-to-print">
                 <h2 id="name"></h2>
                 <span id="origin" class="origin-info"></span>
                 <img id="pic" class="meal-pic" src="" crossorigin="anonymous">
                 
-                <div class="header-row">
+                <div class="header-with-btn">
                     <h3>Ingredients</h3>
-                    <button class="save-pdf-btn" onclick="downloadPDF()">💾 PDF</button>
+                    <button class="save-pdf-btn" onclick="saveAsPDF()">💾 PDF</button>
                 </div>
                 <ul id="ing"></ul>
                 
@@ -175,20 +154,27 @@
         setTimeout(toggleLanguages, 500);
     }
 
-    async function downloadPDF() {
-        const element = document.getElementById('printable-area');
-        const recipeName = document.getElementById('name').innerText || 'Rezept';
+    async function saveAsPDF() {
+        const element = document.getElementById('recipe-to-print');
+        const recipeName = document.getElementById('name').innerText || 'recipe';
+        
+        // Sperre kurz aufheben für PDF Generierung
+        element.style.pointerEvents = "auto";
+        element.style.userSelect = "auto";
         
         const opt = {
-            margin: [10, 10, 10, 10],
+            margin: 10,
             filename: recipeName + '.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
-        
-        html2pdf().set(opt).from(element).save();
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Sperre wieder aktivieren
+            element.style.pointerEvents = "none";
+            element.style.userSelect = "none";
+        });
     }
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
