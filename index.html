@@ -32,15 +32,14 @@
             font-size: 1.6rem; transition: transform 0.2s; background: #f8f9fa; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* Verhindert Google Popups auf Texten */
+        /* Verhindert Google Popups auf passiven Texten */
         .content, h2, h3, li, .steps, .origin-info, span, p {
             -webkit-user-select: none;
             user-select: none;
-            pointer-events: none;
         }
 
-        /* Erlaubt Klicks nur auf Buttons */
-        .action-btn, .menu-btn, .lang-btn, .banner-container, .save-pdf-btn, .back-btn, .header-row {
+        /* Buttons müssen klickbar bleiben */
+        .action-btn, .menu-btn, .lang-btn, .banner-container, .save-pdf-btn, .back-btn {
             pointer-events: auto !important;
         }
 
@@ -80,7 +79,6 @@
         .back-btn { background: #95a5a6; margin-top: 10px; }
         #loader { text-align: center; padding: 50px; font-weight: bold; }
 
-        /* PDF Layout */
         #printable-area { background: white; padding: 5px; }
     </style>
 </head>
@@ -99,7 +97,7 @@
 
     <div id="google_translate_element"></div>
 
-    <div id="main-menu" class="notranslate" translate="no">
+    <div id="main-menu">
         <h2 style="margin-bottom: 25px;">Hoş geldin Anne! ❤️</h2>
         <button class="menu-btn" style="background: var(--intl);" onclick="startApp('intl')"><span>🌍</span> International recipes</button>
         <button class="menu-btn" style="background: var(--turkish);" onclick="startApp('turkish')"><span>🇹🇷</span> Turkish recipes</button>
@@ -150,7 +148,6 @@
         setTimeout(toggleLanguages, 500);
     }
 
-    // DIE FUNKTIONIERENDE PDF LOGIK
     async function downloadPDF() {
         const element = document.getElementById('printable-area');
         const recipeName = document.getElementById('name').innerText || 'Recipe';
@@ -208,6 +205,7 @@
         const box = document.getElementById('edition-header-box');
         const nextBtn = document.getElementById('next-btn');
 
+        // Die Texte hier sind nur intern für das System wichtig
         if(mode === 'intl') { header.textContent = "🌍 International recipes"; box.style.backgroundColor = "#2980b9"; nextBtn.style.backgroundColor = "#2980b9"; }
         else if(mode === 'turkish') { header.textContent = "🇹🇷 Turkish recipes"; box.style.backgroundColor = "#c0392b"; nextBtn.style.backgroundColor = "#c0392b"; }
         else if(mode === 'dessert') { header.textContent = "🍭 Dessert recipes"; box.style.backgroundColor = "#d81b60"; nextBtn.style.backgroundColor = "#d81b60"; }
